@@ -1,0 +1,196 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+
+using namespace std;
+
+struct Socio {
+    string nombre;
+    string apellidos;
+    string direccion;
+    string celular;
+    string dni;
+    string tipoProducto;
+    double aporte;
+};
+
+
+void agregarSocio(vector<Socio> &socios) {
+    Socio socio;
+    cout << "Nombre: ";
+    cin >> socio.nombre;
+    cout << "Apellidos: ";
+    cin >> socio.apellidos;
+    cout << "Dirección: ";
+    cin >> socio.direccion;
+    cout << "Número de celular: ";
+    cin >> socio.celular;
+    cout << "DNI: ";
+    cin >> socio.dni;
+    cout << "Tipo de producto que produce (cacao, café, plátano): ";
+    cin >> socio.tipoProducto;
+    cout << "Aporte: ";
+    cin >> socio.aporte;
+
+    socios.push_back(socio);
+}
+
+
+void mostrarSocios(const vector<Socio> &socios) {
+    cout << "Socios registrados:\n";
+    for (const Socio &socio : socios) {
+        cout << "Nombre: " << socio.nombre << " " << socio.apellidos << endl;
+        cout << "Dirección: " << socio.direccion << endl;
+        cout << "Número de celular: " << socio.celular << endl;
+        cout << "DNI: " << socio.dni << endl;
+        cout << "Tipo de producto que produce: " << socio.tipoProducto << endl;
+        cout << "Aporte: " << socio.aporte << endl;
+        cout << "---------------------------\n";
+    }
+}
+
+
+void editarSocio(vector<Socio> &socios, const string &dni) {
+    for (Socio &socio : socios) {
+        if (socio.dni == dni) {
+            cout << "Editar datos del socio: " << socio.nombre << " " << socio.apellidos << endl;
+            cout << "Nuevo Nombre: ";
+            cin >> socio.nombre;
+            cout << "Nuevos Apellidos: ";
+            cin >> socio.apellidos;
+            cout << "Nueva Dirección: ";
+            cin >> socio.direccion;
+            cout << "Nuevo Número de celular: ";
+            cin >> socio.celular;
+            cout << "Nuevo Tipo de producto que produce (cacao, café, plátano): ";
+            cin >> socio.tipoProducto;
+            cout << "Nuevo Aporte: ";
+            cin >> socio.aporte;
+            return;
+        }
+    }
+    cout << "Socio no encontrado.\n";
+}
+
+
+vector<Socio> clasificarSocios(const vector<Socio> &socios, const string &tipoProducto) {
+    vector<Socio> sociosClasificados;
+    for (const Socio &socio : socios) {
+        if (socio.tipoProducto == tipoProducto) {
+            sociosClasificados.push_back(socio);
+        }
+    }
+    return sociosClasificados;
+}
+
+
+double sumarAportes(const vector<Socio> &socios) {
+    double totalAportes = 0.0;
+    for (const Socio &socio : socios) {
+        totalAportes += socio.aporte;
+    }
+    return totalAportes;
+}
+
+
+double realizarOperacion(vector<Socio> &socios, const string &producto, double precio, double cantidad, char opcion) {
+    double totalAportes = 0.0;
+    for (Socio &socio : socios) {
+        if (socio.tipoProducto == producto) {
+            if (opcion == 'c') {
+                totalAportes -= cantidad * precio;
+            } else if (opcion == 'v') {
+                totalAportes += cantidad * precio;
+            }
+        }
+    }
+    return totalAportes;
+}
+
+int main() {
+    vector<Socio> socios;
+    double totalAportes = 0.0;
+    char opcion;
+
+    do {
+        cout << "\nMenú:\n";
+        cout << "1. Agregar socio\n";
+        cout << "2. Mostrar socios\n";
+        cout << "3. Editar datos de un socio\n";
+        cout << "4. Clasificar socios por tipo de producto\n";
+        cout << "5. Sumar aportes diarios\n";
+        cout << "6. Realizar operación de compra\n";
+        cout << "7. Realizar operación de venta\n";
+        cout << "8. Salir\n";
+        cout << "Ingrese opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case '1':
+                agregarSocio(socios);
+                break;
+            case '2':
+                mostrarSocios(socios);
+                break;
+            case '3':
+                {
+                    string dni;
+                    cout << "Ingrese DNI del socio a editar: ";
+                    cin >> dni;
+                    editarSocio(socios, dni);
+                }
+                break;
+            case '4':
+                {
+                    string tipoProducto;
+                    cout << "Ingrese el tipo de producto (cacao, café, plátano): ";
+                    cin >> tipoProducto;
+                    vector<Socio> sociosClasificados = clasificarSocios(socios, tipoProducto);
+                    cout << "Socios que producen " << tipoProducto << ":\n";
+                    mostrarSocios(sociosClasificados);
+                }
+                break;
+            case '5':
+                totalAportes = sumarAportes(socios);
+                cout << "Total de aportes diarios: " << fixed << setprecision(2) << totalAportes << endl;
+                break;
+            case '6':
+                {
+                    string producto;
+                    double precio, cantidad;
+                    cout << "Ingrese el tipo de producto (cacao, café, plátano): ";
+                    cin >> producto;
+                    cout << "Ingrese el precio por kilogramo: ";
+                    cin >> precio;
+                    cout << "Ingrese la cantidad a comprar: ";
+                    cin >> cantidad;
+                    totalAportes = realizarOperacion(socios, producto, precio, cantidad, 'c');
+                    cout << "Nuevo total de aportes: " << fixed << setprecision(2) << totalAportes << endl;
+                }
+                break;
+            case '7':
+                {
+                    string producto;
+                    double precio, cantidad;
+                    cout << "Ingrese el tipo de producto (cacao, café, plátano): ";
+                    cin >> producto;
+                    cout << "Ingrese el precio por kilogramo: ";
+                    cin >> precio;
+                    cout << "Ingrese la cantidad a vender: ";
+                    cin >> cantidad;
+                    totalAportes = realizarOperacion(socios, producto, precio, cantidad, 'v');
+                    cout << "Nuevo total de aportes: " << fixed << setprecision(2) << totalAportes << endl;
+                }
+                break;
+            case '8':
+                cout << "Saliendo del programa.\n";
+                break;
+            default:
+                cout << "Opción no válida. Intente de nuevo.\n";
+                break;
+        }
+    } while (opcion != '8');
+
+    return 0;
+}
